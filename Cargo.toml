@@ -16,7 +16,7 @@ serialize_capnp = []
 serialize_serde = ["serde"]
 
 [dependencies]
-atlas-common = { path = "../atlas-common" }
-atlas-communication = { path = "../atlas-communication" }
-atlas-metrics = {path = "../atlas-metrics" }
+atlas-common = { path = "../Atlas-Common" }
+atlas-communication = { path = "../Atlas-Communication" }
+atlas-metrics = {path = "../Atlas-Metrics" }
 serde = { version = "*", optional = true }
