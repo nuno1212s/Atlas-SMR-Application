@@ -11,13 +11,20 @@ pub enum InstallStateMessage<S> where S: DivisibleState {
     Done
 }
 
+/// Messages to be sent by the executor for the state transfer module, notifying of a given
+/// checkpoint being made
+pub enum AppState<S> where S: DivisibleState {
+    StateInitializer(SeqNo, S::StateDescriptor),
+    StatePart(Vec<S::StatePart>),
+    Done
+}
+
 /// The message that is sent when a checkpoint is done by the execution module
 /// and a state must be returned for the state transfer protocol
 pub struct AppStateMessage<S> where S: DivisibleState {
 
     seq_no: SeqNo,
     state_descriptor: S::StateDescriptor,
-    altered_parts: Vec<S::StatePart>,
 
 }
 
@@ -90,12 +97,11 @@ impl<S> AppStateMessage<S> where S: DivisibleState {
         AppStateMessage {
             seq_no,
             state_descriptor,
-            altered_parts,
         }
     }
 
-    pub fn into_state(self) -> (S::StateDescriptor, Vec<S::StatePart>) {
-        (self.state_descriptor, self.altered_parts)
+    pub fn into_state(self) -> (S::StateDescriptor) {
+        (self.state_descriptor)
     }
 
 }
