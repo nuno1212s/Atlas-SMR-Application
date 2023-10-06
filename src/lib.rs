@@ -10,8 +10,12 @@ pub mod app;
 pub mod state;
 
 pub enum ExecutionRequest<O> {
+    // Poll the state channel
+    // As we have an incoming state update
     PollStateChannel,
 
+    // Catch up to the current execution by
+    // Executing the given requests
     CatchUp(Vec<O>),
 
     // update the state of the service
@@ -34,7 +38,6 @@ pub struct ExecutorHandle<D: ApplicationData> {
 
 impl<D: ApplicationData> ExecutorHandle<D>
 {
-
     pub fn new(tx: ChannelSyncTx<ExecutionRequest<D::Request>>) -> Self {
         ExecutorHandle { e_tx: tx }
     }
