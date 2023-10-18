@@ -4,6 +4,7 @@ use atlas_common::node_id::NodeId;
 use crate::app::{Reply, Request, UnorderedBatch, UpdateBatch};
 use crate::serialize::ApplicationData;
 use std::time::Instant;
+use atlas_common::maybe_vec::MaybeVec;
 
 pub mod serialize;
 pub mod app;
@@ -16,7 +17,7 @@ pub enum ExecutionRequest<O> {
 
     // Catch up to the current execution by
     // Executing the given requests
-    CatchUp(Vec<O>),
+    CatchUp(MaybeVec<UpdateBatch<O>>),
 
     // update the state of the service
     Update((UpdateBatch<O>, Instant)),
@@ -49,7 +50,7 @@ impl<D: ApplicationData> ExecutorHandle<D>
             .simple(ErrorKind::Executable)
     }
 
-    pub fn catch_up_to_quorum(&self, requests: Vec<D::Request>) -> Result<()> {
+    pub fn catch_up_to_quorum(&self, requests: MaybeVec<UpdateBatch<D::Request>>) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::CatchUp(requests))
             .simple(ErrorKind::Executable)
