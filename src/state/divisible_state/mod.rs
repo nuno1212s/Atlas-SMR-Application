@@ -5,7 +5,11 @@ use atlas_common::crypto::hash::Digest;
 use atlas_common::maybe_vec::MaybeVec;
 use atlas_common::ordering::{Orderable, SeqNo};
 
+/// Messages to be sent from the state transfer module to the
+/// executor module
 pub enum InstallStateMessage<S> where S: DivisibleState {
+    /// We have received the descriptor of the state
+    StateDescriptor(S::StateDescriptor),
     /// We have received a part of the state
     StatePart(MaybeVec<S::StatePart>),
     /// We can go back to polling the regular channel for new messages, as we are done installing state
@@ -25,7 +29,6 @@ pub enum AppState<S> where S: DivisibleState {
 pub struct AppStateMessage<S> where S: DivisibleState {
     seq_no: SeqNo,
     state: AppState<S>,
-
 }
 
 /// The trait that represents the ID of a part
