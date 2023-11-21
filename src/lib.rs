@@ -47,13 +47,11 @@ impl<D: ApplicationData> ExecutorHandle<D>
     pub fn poll_state_channel(&self) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::PollStateChannel)
-            .simple(ErrorKind::Executable)
     }
 
     pub fn catch_up_to_quorum(&self, requests: MaybeVec<UpdateBatch<D::Request>>) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::CatchUp(requests))
-            .simple(ErrorKind::Executable)
     }
 
     /// Queues a batch of requests `batch` for execution.
@@ -61,7 +59,6 @@ impl<D: ApplicationData> ExecutorHandle<D>
                         -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::Update((batch, Instant::now())))
-            .simple(ErrorKind::Executable)
     }
 
     /// Queues a batch of unordered requests for execution
@@ -69,7 +66,6 @@ impl<D: ApplicationData> ExecutorHandle<D>
                                   -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::ExecuteUnordered(requests))
-            .simple(ErrorKind::Executable)
     }
 
     /// Same as `queue_update()`, additionally reporting the serialized
@@ -82,7 +78,6 @@ impl<D: ApplicationData> ExecutorHandle<D>
     ) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::UpdateAndGetAppstate((batch, Instant::now())))
-            .simple(ErrorKind::Executable)
     }
 }
 
