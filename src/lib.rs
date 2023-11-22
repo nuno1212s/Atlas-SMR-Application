@@ -4,6 +4,7 @@ use atlas_common::node_id::NodeId;
 use crate::app::{Reply, Request, UnorderedBatch, UpdateBatch};
 use crate::serialize::ApplicationData;
 use std::time::Instant;
+use anyhow::Context;
 use atlas_common::maybe_vec::MaybeVec;
 
 pub mod serialize;
@@ -47,11 +48,13 @@ impl<D: ApplicationData> ExecutorHandle<D>
     pub fn poll_state_channel(&self) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::PollStateChannel)
+            .context("Failed to place poll order into executor channel")
     }
 
     pub fn catch_up_to_quorum(&self, requests: MaybeVec<UpdateBatch<D::Request>>) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::CatchUp(requests))
+            .context("Failed to place catch up order into executor channel")
     }
 
     /// Queues a batch of requests `batch` for execution.
@@ -59,6 +62,7 @@ impl<D: ApplicationData> ExecutorHandle<D>
                         -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::Update((batch, Instant::now())))
+            .context("Failed to place update order into executor channel")
     }
 
     /// Queues a batch of unordered requests for execution
@@ -66,6 +70,7 @@ impl<D: ApplicationData> ExecutorHandle<D>
                                   -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::ExecuteUnordered(requests))
+            .context("Failed to place unordered update order into executor channel")
     }
 
     /// Same as `queue_update()`, additionally reporting the serialized
@@ -78,6 +83,7 @@ impl<D: ApplicationData> ExecutorHandle<D>
     ) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::UpdateAndGetAppstate((batch, Instant::now())))
+            .context("Failed to place update and get appstate order into executor channel")
     }
 }
 
