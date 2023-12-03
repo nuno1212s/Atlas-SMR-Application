@@ -4,15 +4,21 @@ use atlas_common::node_id::NodeId;
 use crate::app::{Reply, Request, UnorderedBatch, UpdateBatch};
 use crate::serialize::ApplicationData;
 use std::time::Instant;
+use anyhow::Context;
+use atlas_common::maybe_vec::MaybeVec;
 
 pub mod serialize;
 pub mod app;
 pub mod state;
 
 pub enum ExecutionRequest<O> {
+    // Poll the state channel
+    // As we have an incoming state update
     PollStateChannel,
 
-    CatchUp(Vec<O>),
+    // Catch up to the current execution by
+    // Executing the given requests
+    CatchUp(MaybeVec<UpdateBatch<O>>),
 
     // update the state of the service
     Update((UpdateBatch<O>, Instant)),
@@ -34,7 +40,6 @@ pub struct ExecutorHandle<D: ApplicationData> {
 
 impl<D: ApplicationData> ExecutorHandle<D>
 {
-
     pub fn new(tx: ChannelSyncTx<ExecutionRequest<D::Request>>) -> Self {
         ExecutorHandle { e_tx: tx }
     }
@@ -43,13 +48,13 @@ impl<D: ApplicationData> ExecutorHandle<D>
     pub fn poll_state_channel(&self) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::PollStateChannel)
-            .simple(ErrorKind::Executable)
+            .context("Failed to place poll order into executor channel")
     }
 
-    pub fn catch_up_to_quorum(&self, requests: Vec<D::Request>) -> Result<()> {
+    pub fn catch_up_to_quorum(&self, requests: MaybeVec<UpdateBatch<D::Request>>) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::CatchUp(requests))
-            .simple(ErrorKind::Executable)
+            .context("Failed to place catch up order into executor channel")
     }
 
     /// Queues a batch of requests `batch` for execution.
@@ -57,7 +62,7 @@ impl<D: ApplicationData> ExecutorHandle<D>
                         -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::Update((batch, Instant::now())))
-            .simple(ErrorKind::Executable)
+            .context("Failed to place update order into executor channel")
     }
 
     /// Queues a batch of unordered requests for execution
@@ -65,7 +70,7 @@ impl<D: ApplicationData> ExecutorHandle<D>
                                   -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::ExecuteUnordered(requests))
-            .simple(ErrorKind::Executable)
+            .context("Failed to place unordered update order into executor channel")
     }
 
     /// Same as `queue_update()`, additionally reporting the serialized
@@ -78,7 +83,7 @@ impl<D: ApplicationData> ExecutorHandle<D>
     ) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::UpdateAndGetAppstate((batch, Instant::now())))
-            .simple(ErrorKind::Executable)
+            .context("Failed to place update and get appstate order into executor channel")
     }
 }
 
