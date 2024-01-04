@@ -6,6 +6,7 @@ use atlas_common::crypto::hash::{Context, Digest};
 use atlas_common::error::*;
 use atlas_common::globals::ReadOnly;
 use atlas_common::ordering::SeqNo;
+use atlas_common::serialization_helper::SerType;
 
 pub struct InstallStateMessage<S> where S: MonolithicState {
     state: S,
@@ -17,8 +18,7 @@ pub struct AppStateMessage<S> where S: MonolithicState {
 }
 
 /// The type abstraction for a monolithic state (only needs to be serializable, in reality)
-#[cfg(feature = "serialize_serde")]
-pub trait MonolithicState: for<'a> Deserialize<'a> + Serialize + Send + Sync + Clone {
+pub trait MonolithicState: SerType + Sync {
     ///Serialize a request from your service, given the writer to serialize into
     ///  (either for network sending or persistent storing)
     fn serialize_state<W>(w: W, request: &Self) -> Result<()> where W: Write;
@@ -27,9 +27,6 @@ pub trait MonolithicState: for<'a> Deserialize<'a> + Serialize + Send + Sync + C
     ///  (either for network sending or persistent storing)
     fn deserialize_state<R>(r: R) -> Result<Self> where R: Read, Self: Sized;
 }
-
-#[cfg(feature = "serialize_capnp")]
-pub trait MonolithicState: Send + Sync + Clone {}
 
 
 impl<S> AppStateMessage<S> where S: MonolithicState {
