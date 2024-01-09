@@ -14,7 +14,7 @@ pub type AppData<A, S> = <A as Application<S>>::AppData;
 
 /// An application for a state machine replication protocol.
 pub trait Application<S>: Send {
-    type AppData: ApplicationData;
+    type AppData: ApplicationData + 'static;
 
     /// Returns the initial state of the application.
     fn initial_state() -> Result<S>;
