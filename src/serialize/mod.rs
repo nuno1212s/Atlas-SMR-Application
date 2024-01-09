@@ -14,11 +14,11 @@ pub trait ApplicationData: Send + Sync {
 
     /// Represents the requests forwarded to replicas by the
     /// clients of the BFT system.
-    type Request: SerType;
+    type Request: SerType + 'static;
 
     /// Represents the replies forwarded to clients by replicas
     /// in the BFT system.
-    type Reply: SerType;
+    type Reply: SerType + 'static;
 
     ///Serialize a request from your service, given the writer to serialize into
     ///  (either for network sending or persistent storing)
