@@ -1,11 +1,14 @@
+use std::time::Instant;
+
+use anyhow::Context;
+
 use atlas_common::channel::ChannelSyncTx;
 use atlas_common::error::*;
-use atlas_common::node_id::NodeId;
-use crate::app::{Reply, Request, UnorderedBatch, UpdateBatch};
-use crate::serialize::ApplicationData;
-use std::time::Instant;
-use anyhow::Context;
 use atlas_common::maybe_vec::MaybeVec;
+use atlas_common::node_id::NodeId;
+
+use crate::app::{UnorderedBatch, UpdateBatch};
+use crate::serialize::ApplicationData;
 
 pub mod serialize;
 pub mod app;
