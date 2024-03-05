@@ -1,11 +1,14 @@
+use std::time::Instant;
+
+use anyhow::Context;
+
 use atlas_common::channel::ChannelSyncTx;
 use atlas_common::error::*;
-use atlas_common::node_id::NodeId;
-use crate::app::{Reply, Request, UnorderedBatch, UpdateBatch};
-use crate::serialize::ApplicationData;
-use std::time::Instant;
-use anyhow::Context;
 use atlas_common::maybe_vec::MaybeVec;
+use atlas_common::node_id::NodeId;
+
+use crate::app::{UnorderedBatch, UpdateBatch};
+use crate::serialize::ApplicationData;
 
 pub mod serialize;
 pub mod app;
@@ -34,13 +37,13 @@ pub enum ExecutionRequest<O> {
 }
 
 /// Represents a handle to the client request executor.
-pub struct ExecutorHandle<D: ApplicationData> {
-    e_tx: ChannelSyncTx<ExecutionRequest<D::Request>>,
+pub struct ExecutorHandle<RQ> {
+    e_tx: ChannelSyncTx<ExecutionRequest<RQ>>,
 }
 
-impl<D: ApplicationData> ExecutorHandle<D>
+impl<RQ> ExecutorHandle<RQ>
 {
-    pub fn new(tx: ChannelSyncTx<ExecutionRequest<D::Request>>) -> Self {
+    pub fn new(tx: ChannelSyncTx<ExecutionRequest<RQ>>) -> Self {
         ExecutorHandle { e_tx: tx }
     }
 
@@ -51,14 +54,14 @@ impl<D: ApplicationData> ExecutorHandle<D>
             .context("Failed to place poll order into executor channel")
     }
 
-    pub fn catch_up_to_quorum(&self, requests: MaybeVec<UpdateBatch<D::Request>>) -> Result<()> {
+    pub fn catch_up_to_quorum(&self, requests: MaybeVec<UpdateBatch<RQ>>) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::CatchUp(requests))
             .context("Failed to place catch up order into executor channel")
     }
 
     /// Queues a batch of requests `batch` for execution.
-    pub fn queue_update(&self, batch: UpdateBatch<D::Request>)
+    pub fn queue_update(&self, batch: UpdateBatch<RQ>)
                         -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::Update((batch, Instant::now())))
@@ -66,7 +69,7 @@ impl<D: ApplicationData> ExecutorHandle<D>
     }
 
     /// Queues a batch of unordered requests for execution
-    pub fn queue_update_unordered(&self, requests: UnorderedBatch<D::Request>)
+    pub fn queue_update_unordered(&self, requests: UnorderedBatch<RQ>)
                                   -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::ExecuteUnordered(requests))
@@ -79,7 +82,7 @@ impl<D: ApplicationData> ExecutorHandle<D>
     /// This is useful during local checkpoints.
     pub fn queue_update_and_get_appstate(
         &self,
-        batch: UpdateBatch<D::Request>,
+        batch: UpdateBatch<RQ>,
     ) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::UpdateAndGetAppstate((batch, Instant::now())))
@@ -87,7 +90,7 @@ impl<D: ApplicationData> ExecutorHandle<D>
     }
 }
 
-impl<D: ApplicationData> Clone for ExecutorHandle<D> {
+impl<RQ> Clone for ExecutorHandle<RQ> {
     fn clone(&self) -> Self {
         let e_tx = self.e_tx.clone();
         Self { e_tx }

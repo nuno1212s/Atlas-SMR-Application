@@ -10,15 +10,9 @@ repository = "https://github.com/nuno1212s/febft"
 documentation = "https://docs.rs/febft"
 readme = "README.md"
 
-[features]
-
-serialize_capnp = []
-serialize_serde = ["serde"]
-
 [dependencies]
-anyhow = "1.0.75"
-thiserror = "1.0.50"
+anyhow = "1.0"
+thiserror = "1.0"
 atlas-common = { path = "../Atlas-Common" }
 atlas-communication = { path = "../Atlas-Communication" }
 atlas-metrics = {path = "../Atlas-Metrics" }
-serde = { version = "*", optional = true }

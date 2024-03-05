@@ -1,8 +1,7 @@
 use std::io::{Read, Write};
-#[cfg(feature = "serialize_serde")]
-use serde::{Deserialize, Serialize};
 
 use atlas_common::error::*;
+use atlas_common::serialization_helper::SerType;
 
 /// Marker trait containing the types used by the application,
 /// as well as routines to serialize the application data.
@@ -12,21 +11,14 @@ use atlas_common::error::*;
 /// This data type must be Send since it will be sent across
 /// threads for processing and follow up reception
 pub trait ApplicationData: Send + Sync {
+
     /// Represents the requests forwarded to replicas by the
     /// clients of the BFT system.
-    #[cfg(feature = "serialize_serde")]
-    type Request: for<'a> Deserialize<'a> + Serialize + Send + Clone;
-
-    #[cfg(feature = "serialize_capnp")]
-    type Request: Send + Clone;
+    type Request: SerType + 'static;
 
     /// Represents the replies forwarded to clients by replicas
     /// in the BFT system.
-    #[cfg(feature = "serialize_serde")]
-    type Reply: for<'a> Deserialize<'a> + Serialize + Send + Clone;
-
-    #[cfg(feature = "serialize_capnp")]
-    type Reply: Send + Clone;
+    type Reply: SerType + 'static;
 
     ///Serialize a request from your service, given the writer to serialize into
     ///  (either for network sending or persistent storing)

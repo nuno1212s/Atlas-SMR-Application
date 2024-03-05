@@ -1,9 +1,8 @@
-#[cfg(feature = "serialize_serde")]
-use serde::{Deserialize, Serialize};
 use atlas_common::error::*;
 use atlas_common::crypto::hash::Digest;
 use atlas_common::maybe_vec::MaybeVec;
 use atlas_common::ordering::{Orderable, SeqNo};
+use atlas_common::serialization_helper::SerType;
 
 /// Messages to be sent from the state transfer module to the
 /// executor module
@@ -54,23 +53,12 @@ pub trait StatePart<S: DivisibleState> {
 /// The trait that represents a divisible state, to be used by the state transfer protocol
 ///
 pub trait DivisibleState: Sized {
-    #[cfg(feature = "serialize_serde")]
-    type PartDescription: PartId + for<'a> Deserialize<'a> + Serialize + Send + Clone;
 
-    #[cfg(feature = "serialize_capnp")]
-    type PartDescription: PartId + Send + Clone;
+    type PartDescription: PartId + SerType;
 
-    #[cfg(feature = "serialize_serde")]
-    type StateDescriptor: DivisibleStateDescriptor<Self> + for<'a> Deserialize<'a> + Serialize + Send + Clone;
+    type StateDescriptor: DivisibleStateDescriptor<Self> + SerType;
 
-    #[cfg(feature = "serialize_capnp")]
-    type StateDescriptor: DivisibleStateDescriptor<Self> + Send + Clone;
-
-    #[cfg(feature = "serialize_serde")]
-    type StatePart: StatePart<Self> + for<'a> Deserialize<'a> + Serialize + Send + Clone;
-
-    #[cfg(feature = "serialize_capnp")]
-    type StatePart: StatePart<Self> + Send + Clone;
+    type StatePart: StatePart<Self> + SerType;
 
     /// Get the description of the state at this moment
     fn get_descriptor(&self) -> &Self::StateDescriptor;
