@@ -1,3 +1,4 @@
+use std::ops::{Deref, DerefMut};
 use crate::serialize::ApplicationData;
 use atlas_common::error::*;
 use atlas_common::node_id::NodeId;
@@ -13,7 +14,10 @@ pub type Reply<A, S> = <<A as Application<S>>::AppData as ApplicationData>::Repl
 pub type AppData<A, S> = <A as Application<S>>::AppData;
 
 /// An application for a state machine replication protocol.
-pub trait Application<S>: Send {
+/// Applications must be [Sync] and [Send] as they can be called
+/// from multiple threads. The concurrency control should be done 
+/// by the State, never the actual application.
+pub trait Application<S>: Send + Sync {
     type AppData: ApplicationData + 'static;
 
     /// Returns the initial state of the application.
@@ -291,6 +295,20 @@ impl<P> BatchReplies<P> {
     /// Returns the length of the batch.
     pub fn len(&self) -> usize {
         self.inner.len()
+    }
+}
+
+impl<O> Deref for BatchReplies<O> {
+    type Target = Vec<UpdateReply<O>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl<O> DerefMut for BatchReplies<O> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
     }
 }
 

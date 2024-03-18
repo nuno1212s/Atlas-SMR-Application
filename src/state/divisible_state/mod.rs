@@ -63,7 +63,7 @@ pub trait StatePart<S: DivisibleState> {
 ///
 /// The trait that represents a divisible state, to be used by the state transfer protocol
 ///
-pub trait DivisibleState: Sized {
+pub trait DivisibleState: Sized + Send {
     type PartDescription: PartId + SerType;
 
     type StateDescriptor: DivisibleStateDescriptor<Self> + SerType;

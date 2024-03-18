@@ -24,7 +24,7 @@ where
 }
 
 /// The type abstraction for a monolithic state (only needs to be serializable, in reality)
-pub trait MonolithicState: SerType + Sync {
+pub trait MonolithicState: SerType {
     ///Serialize a request from your service, given the writer to serialize into
     ///  (either for network sending or persistent storing)
     fn serialize_state<W>(w: W, request: &Self) -> Result<()>
