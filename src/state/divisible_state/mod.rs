@@ -1,12 +1,15 @@
-use atlas_common::error::*;
 use atlas_common::crypto::hash::Digest;
+use atlas_common::error::*;
 use atlas_common::maybe_vec::MaybeVec;
 use atlas_common::ordering::{Orderable, SeqNo};
 use atlas_common::serialization_helper::SerType;
 
 /// Messages to be sent from the state transfer module to the
 /// executor module
-pub enum InstallStateMessage<S> where S: DivisibleState {
+pub enum InstallStateMessage<S>
+where
+    S: DivisibleState,
+{
     /// We have received the descriptor of the state
     StateDescriptor(S::StateDescriptor),
     /// We have received a part of the state
@@ -17,7 +20,10 @@ pub enum InstallStateMessage<S> where S: DivisibleState {
 
 /// Messages to be sent by the executor for the state transfer module, notifying of a given
 /// checkpoint being made
-pub enum AppState<S> where S: DivisibleState {
+pub enum AppState<S>
+where
+    S: DivisibleState,
+{
     StateDescriptor(S::StateDescriptor),
     StatePart(MaybeVec<S::StatePart>),
     Done,
@@ -25,7 +31,10 @@ pub enum AppState<S> where S: DivisibleState {
 
 /// The message that is sent when a checkpoint is done by the execution module
 /// and a state must be returned for the state transfer protocol
-pub struct AppStateMessage<S> where S: DivisibleState {
+pub struct AppStateMessage<S>
+where
+    S: DivisibleState,
+{
     seq_no: SeqNo,
     state: AppState<S>,
 }
@@ -36,7 +45,9 @@ pub trait PartId: PartialEq + PartialOrd + Clone {
 }
 
 /// The abstraction for a divisible state, to be used by the state transfer protocol
-pub trait DivisibleStateDescriptor<S: DivisibleState>: Orderable + PartialEq + Clone + Send {
+pub trait DivisibleStateDescriptor<S: DivisibleState>:
+    Orderable + PartialEq + Clone + Send
+{
     /// Get all the parts of the state
     fn parts(&self) -> &Vec<S::PartDescription>;
 
@@ -53,7 +64,6 @@ pub trait StatePart<S: DivisibleState> {
 /// The trait that represents a divisible state, to be used by the state transfer protocol
 ///
 pub trait DivisibleState: Sized {
-
     type PartDescription: PartId + SerType;
 
     type StateDescriptor: DivisibleStateDescriptor<Self> + SerType;
@@ -73,7 +83,10 @@ pub trait DivisibleState: Sized {
     fn get_parts(&self, parts: &[Self::PartDescription]) -> Result<Vec<Self::StatePart>>;
 }
 
-impl<S> AppStateMessage<S> where S: DivisibleState {
+impl<S> AppStateMessage<S>
+where
+    S: DivisibleState,
+{
     //Constructor
     pub fn new(seq_no: SeqNo, state_portion: AppState<S>) -> Self {
         AppStateMessage {
@@ -87,7 +100,10 @@ impl<S> AppStateMessage<S> where S: DivisibleState {
     }
 }
 
-impl<S> Orderable for AppStateMessage<S> where S: DivisibleState {
+impl<S> Orderable for AppStateMessage<S>
+where
+    S: DivisibleState,
+{
     fn sequence_number(&self) -> SeqNo {
         self.seq_no
     }

@@ -1,8 +1,8 @@
+use crate::serialize::ApplicationData;
 use atlas_common::error::*;
 use atlas_common::node_id::NodeId;
 use atlas_common::ordering::{Orderable, SeqNo};
 use atlas_metrics::benchmarks::BatchMeta;
-use crate::serialize::ApplicationData;
 
 /// Request type of the `Service`.
 pub type Request<A, S> = <<A as Application<S>>::AppData as ApplicationData>::Request;
@@ -214,7 +214,6 @@ impl<O> AsRef<[Update<O>]> for UpdateBatch<O> {
         &self.inner[..]
     }
 }
-
 
 impl<O> Update<O> {
     /// Returns the inner types stored in this `Update`.

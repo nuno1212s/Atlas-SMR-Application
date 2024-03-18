@@ -10,8 +10,8 @@ use atlas_common::node_id::NodeId;
 use crate::app::{UnorderedBatch, UpdateBatch};
 use crate::serialize::ApplicationData;
 
-pub mod serialize;
 pub mod app;
+pub mod serialize;
 pub mod state;
 
 pub enum ExecutionRequest<O> {
@@ -41,8 +41,7 @@ pub struct ExecutorHandle<RQ> {
     e_tx: ChannelSyncTx<ExecutionRequest<RQ>>,
 }
 
-impl<RQ> ExecutorHandle<RQ>
-{
+impl<RQ> ExecutorHandle<RQ> {
     pub fn new(tx: ChannelSyncTx<ExecutionRequest<RQ>>) -> Self {
         ExecutorHandle { e_tx: tx }
     }
@@ -61,16 +60,14 @@ impl<RQ> ExecutorHandle<RQ>
     }
 
     /// Queues a batch of requests `batch` for execution.
-    pub fn queue_update(&self, batch: UpdateBatch<RQ>)
-                        -> Result<()> {
+    pub fn queue_update(&self, batch: UpdateBatch<RQ>) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::Update((batch, Instant::now())))
             .context("Failed to place update order into executor channel")
     }
 
     /// Queues a batch of unordered requests for execution
-    pub fn queue_update_unordered(&self, requests: UnorderedBatch<RQ>)
-                                  -> Result<()> {
+    pub fn queue_update_unordered(&self, requests: UnorderedBatch<RQ>) -> Result<()> {
         self.e_tx
             .send(ExecutionRequest::ExecuteUnordered(requests))
             .context("Failed to place unordered update order into executor channel")
@@ -80,12 +77,12 @@ impl<RQ> ExecutorHandle<RQ>
     /// application state.
     ///
     /// This is useful during local checkpoints.
-    pub fn queue_update_and_get_appstate(
-        &self,
-        batch: UpdateBatch<RQ>,
-    ) -> Result<()> {
+    pub fn queue_update_and_get_appstate(&self, batch: UpdateBatch<RQ>) -> Result<()> {
         self.e_tx
-            .send(ExecutionRequest::UpdateAndGetAppstate((batch, Instant::now())))
+            .send(ExecutionRequest::UpdateAndGetAppstate((
+                batch,
+                Instant::now(),
+            )))
             .context("Failed to place update and get appstate order into executor channel")
     }
 }
