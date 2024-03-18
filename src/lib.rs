@@ -8,7 +8,7 @@ use atlas_common::maybe_vec::MaybeVec;
 use atlas_common::node_id::NodeId;
 
 use crate::app::{UnorderedBatch, UpdateBatch};
-use crate::serialize::ApplicationData;
+
 
 pub mod app;
 pub mod serialize;

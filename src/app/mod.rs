@@ -44,7 +44,7 @@ pub trait Application<S>: Send {
 
         for unordered_req in requests.into_inner() {
             let (peer_id, sess, opid, req) = unordered_req.into_inner();
-            let reply = self.unordered_execution(&state, req);
+            let reply = self.unordered_execution(state, req);
             reply_batch.add(peer_id, sess, opid, reply);
         }
 
@@ -173,6 +173,12 @@ impl<O> UpdateBatch<O> {
 impl<O> Orderable for UpdateBatch<O> {
     fn sequence_number(&self) -> SeqNo {
         self.seq_no
+    }
+}
+
+impl<O> Default for UnorderedBatch<O> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

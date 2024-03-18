@@ -1,6 +1,6 @@
 use atlas_common::crypto::hash::{Context, Digest};
 use atlas_common::error::*;
-use atlas_common::globals::ReadOnly;
+
 use atlas_common::ordering::SeqNo;
 use atlas_common::serialization_helper::SerType;
 #[cfg(feature = "serialize_serde")]
@@ -80,7 +80,7 @@ where
 pub fn digest_state<S: MonolithicState>(appstate: &S) -> Result<Digest> {
     let mut state_vec = Vec::with_capacity(size_of::<S>());
 
-    S::serialize_state(&mut state_vec, &appstate)?;
+    S::serialize_state(&mut state_vec, appstate)?;
 
     let mut ctx = Context::new();
 
