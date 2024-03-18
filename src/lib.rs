@@ -9,7 +9,6 @@ use atlas_common::node_id::NodeId;
 
 use crate::app::{UnorderedBatch, UpdateBatch};
 
-
 pub mod app;
 pub mod serialize;
 pub mod state;
