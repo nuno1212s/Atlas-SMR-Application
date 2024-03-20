@@ -8,21 +8,6 @@ use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
 use std::mem::size_of;
 
-pub struct InstallStateMessage<S>
-where
-    S: MonolithicState,
-{
-    state: S,
-}
-
-pub struct AppStateMessage<S>
-where
-    S: MonolithicState,
-{
-    seq: SeqNo,
-    state: S,
-}
-
 /// The type abstraction for a monolithic state (only needs to be serializable, in reality)
 pub trait MonolithicState: SerType {
     ///Serialize a request from your service, given the writer to serialize into
@@ -38,6 +23,22 @@ pub trait MonolithicState: SerType {
         R: Read,
         Self: Sized;
 }
+
+pub struct InstallStateMessage<S>
+    where
+        S: MonolithicState,
+{
+    state: S,
+}
+
+pub struct AppStateMessage<S>
+    where
+        S: MonolithicState,
+{
+    seq: SeqNo,
+    state: S,
+}
+
 
 impl<S> AppStateMessage<S>
 where

@@ -17,6 +17,9 @@ pub type AppData<A, S> = <A as Application<S>>::AppData;
 /// Applications must be [Sync] and [Send] as they can be called
 /// from multiple threads. The concurrency control should be done 
 /// by the State, never the actual application.
+/// 
+/// We only pass the self reference for convenience, as the application
+/// in theory would only require the state and the request.
 pub trait Application<S>: Send + Sync {
     type AppData: ApplicationData + 'static;
 
