@@ -315,6 +315,14 @@ impl<O> DerefMut for BatchReplies<O> {
     }
 }
 
+impl<O> From<Vec<UpdateReply<O>>> for BatchReplies<O> {
+    fn from(value: Vec<UpdateReply<O>>) -> Self {
+        Self {
+            inner: value,
+        }
+    }
+}
+
 impl<P> UpdateReply<P> {
     pub fn init(to: NodeId, session_id: SeqNo, operation_id: SeqNo, payload: P) -> Self {
         Self {
