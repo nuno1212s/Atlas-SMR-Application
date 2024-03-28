@@ -13,13 +13,13 @@ use atlas_common::serialization_helper::SerType;
 pub trait ApplicationData: Send + Sync {
     /// Represents the requests forwarded to replicas by the
     /// clients of the BFT system.
-    /// 
+    ///
     /// Requests must be Sync as it must be safe to share &Request reference types
     type Request: SerType + Sync + 'static;
 
     /// Represents the replies forwarded to clients by replicas
     /// in the BFT system.
-    /// 
+    ///
     /// Replies must be Sync as it must be safe to share &Reply reference types
     type Reply: SerType + Sync + 'static;
 

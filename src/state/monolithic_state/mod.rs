@@ -25,20 +25,19 @@ pub trait MonolithicState: SerType {
 }
 
 pub struct InstallStateMessage<S>
-    where
-        S: MonolithicState,
+where
+    S: MonolithicState,
 {
     state: S,
 }
 
 pub struct AppStateMessage<S>
-    where
-        S: MonolithicState,
+where
+    S: MonolithicState,
 {
     seq: SeqNo,
     state: S,
 }
-
 
 impl<S> AppStateMessage<S>
 where

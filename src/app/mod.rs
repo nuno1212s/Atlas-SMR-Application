@@ -1,9 +1,9 @@
-use std::ops::{Deref, DerefMut};
 use crate::serialize::ApplicationData;
 use atlas_common::error::*;
 use atlas_common::node_id::NodeId;
 use atlas_common::ordering::{Orderable, SeqNo};
 use atlas_metrics::benchmarks::BatchMeta;
+use std::ops::{Deref, DerefMut};
 
 /// Request type of the `Service`.
 pub type Request<A, S> = <<A as Application<S>>::AppData as ApplicationData>::Request;
@@ -15,9 +15,9 @@ pub type AppData<A, S> = <A as Application<S>>::AppData;
 
 /// An application for a state machine replication protocol.
 /// Applications must be [Sync] and [Send] as they can be called
-/// from multiple threads. The concurrency control should be done 
+/// from multiple threads. The concurrency control should be done
 /// by the State, never the actual application.
-/// 
+///
 /// We only pass the self reference for convenience, as the application
 /// in theory would only require the state and the request.
 pub trait Application<S>: Send + Sync {
@@ -317,9 +317,7 @@ impl<O> DerefMut for BatchReplies<O> {
 
 impl<O> From<Vec<UpdateReply<O>>> for BatchReplies<O> {
     fn from(value: Vec<UpdateReply<O>>) -> Self {
-        Self {
-            inner: value,
-        }
+        Self { inner: value }
     }
 }
 
