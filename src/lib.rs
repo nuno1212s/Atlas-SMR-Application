@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use anyhow::Context;
 
-use atlas_common::channel::ChannelSyncTx;
+use atlas_common::channel::sync::ChannelSyncTx;
 use atlas_common::error::*;
 use atlas_common::maybe_vec::MaybeVec;
 use atlas_common::node_id::NodeId;
