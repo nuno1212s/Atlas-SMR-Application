@@ -2,14 +2,14 @@ use atlas_common::crypto::hash::{Context, Digest};
 use atlas_common::error::*;
 
 use atlas_common::ordering::SeqNo;
-use atlas_common::serialization_helper::SerType;
+use atlas_common::serialization_helper::{NonSyncSerMsg, SerMsg};
 #[cfg(feature = "serialize_serde")]
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
 use std::mem::size_of;
 
 /// The type abstraction for a monolithic state (only needs to be serializable, in reality)
-pub trait MonolithicState: SerType {
+pub trait MonolithicState: NonSyncSerMsg {
     ///Serialize a request from your service, given the writer to serialize into
     ///  (either for network sending or persistent storing)
     fn serialize_state<W>(w: W, request: &Self) -> Result<()>

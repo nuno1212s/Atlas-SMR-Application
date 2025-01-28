@@ -1,7 +1,7 @@
 use std::io::{Read, Write};
 
 use atlas_common::error::*;
-use atlas_common::serialization_helper::SerType;
+use atlas_common::serialization_helper::SerMsg;
 
 /// Marker trait containing the types used by the application,
 /// as well as routines to serialize the application data.
@@ -15,13 +15,13 @@ pub trait ApplicationData: Send + Sync {
     /// clients of the BFT system.
     ///
     /// Requests must be Sync as it must be safe to share &Request reference types
-    type Request: SerType + Sync + 'static;
+    type Request: SerMsg + Sync + 'static;
 
     /// Represents the replies forwarded to clients by replicas
     /// in the BFT system.
     ///
     /// Replies must be Sync as it must be safe to share &Reply reference types
-    type Reply: SerType + Sync + 'static;
+    type Reply: SerMsg + Sync + 'static;
 
     ///Serialize a request from your service, given the writer to serialize into
     ///  (either for network sending or persistent storing)
