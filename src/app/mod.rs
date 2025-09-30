@@ -168,6 +168,10 @@ impl<O> UpdateBatch<O> {
         self.inner.len()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.inner.is_empty()
+    }
+
     pub fn append_batch_meta(&mut self, batch_meta: BatchMeta) {
         let _ = self.meta.insert(batch_meta);
     }
@@ -219,6 +223,10 @@ impl<O> UnorderedBatch<O> {
     /// Returns the length of the batch.
     pub fn len(&self) -> usize {
         self.inner.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.inner.is_empty()
     }
 }
 
@@ -298,6 +306,10 @@ impl<P> BatchReplies<P> {
     /// Returns the length of the batch.
     pub fn len(&self) -> usize {
         self.inner.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.inner.is_empty()
     }
 }
 

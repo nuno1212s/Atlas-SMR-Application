@@ -12,7 +12,5 @@ readme = "README.md"
 
 [dependencies]
 anyhow = "1.0"
-thiserror = "1.0"
 atlas-common = { path = "../Atlas-Common" }
-atlas-communication = { path = "../Atlas-Communication" }
 atlas-metrics = {path = "../Atlas-Metrics" }

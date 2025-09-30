@@ -2,9 +2,7 @@ use atlas_common::crypto::hash::{Context, Digest};
 use atlas_common::error::*;
 
 use atlas_common::ordering::SeqNo;
-use atlas_common::serialization_helper::{NonSyncSerMsg, SerMsg};
-#[cfg(feature = "serialize_serde")]
-use serde::{Deserialize, Serialize};
+use atlas_common::serialization_helper::NonSyncSerMsg;
 use std::io::{Read, Write};
 use std::mem::size_of;
 
